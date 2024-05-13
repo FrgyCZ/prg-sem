@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "event_queue.h": "c",
+        "messages.h": "c",
+        "system_error": "c",
+        "pthread.h": "c",
+        "keyboard_module.h": "c"
+    }
+}

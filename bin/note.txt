@@ -1,0 +1,11 @@
+How to communicate via maned pipes?
+How to create threads?
+-b3b36prg-lec08-codes
+How to handle keyboard?
+-b3b36prg-lec08-codes
+How to communicate from thread to another thread?
+How to visualize?
+-b3b36prg-sem
+How to setuo / configure default parametrs?
+-prednaska 9
+How to control the application - keybinding? 
