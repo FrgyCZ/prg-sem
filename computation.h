@@ -63,9 +63,6 @@ void clear_buffer(void);
 void cpu_comp(void);
 int cpu_fractal(int x, int y);
 
-bool set_module_compute(message *msg);
-void module_compute(message *msg);
-
 double complex complex_pow(double complex z);
 double complex_abs(double complex z);
 double my_sqrt(double x);

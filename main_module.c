@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "computation.h"
+#include "computation_module.h"
 #include "main_module.h"
 #include "event_queue.h"
 #include "messages.h"
@@ -38,12 +38,11 @@ void *main_module_thread(void *d)
                 info(set_module_compute(ev.data.msg) ? "Set compute" : "Set compute failed");
                 break;
             case EV_COMPUTE:
-                enable_comp();
-                module_compute(ev.data.msg);
+                //enable_comp();
+                module_compute(ev.data.msg, d);
                 break;
             case EV_COMPUTE_DATA:
-                msg.data = ev.data.msg->data;
-                msg.type = MSG_COMPUTE_DATA;
+                msg.type = MSG_DONE;
                 break;
             case EV_ABORT:
                 debug("NEED TO ABORT");

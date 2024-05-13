@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <complex.h>
 
 #include "computation.h"
 #include "event_queue.h"
@@ -104,10 +105,6 @@ bool compute(message *msg) {
                 comp.cur_y += comp.chunk_n_im;
             }
             msg->type = MSG_COMPUTE;
-        } else {  // all chunks computed
-            // comp.computing = false;
-            // comp.done = true;
-            // msg->type = MSG_DONE;
         }
     }
 
@@ -192,53 +189,6 @@ int cpu_fractal(int x, int y) {
 		}
     }
     return iteration;
-}
-
-bool set_module_compute(message *msg) {
-    my_assert(msg != NULL, __func__, __LINE__, __FILE__);
-    bool ret = !is_computing();
-    if (ret) {
-        comp.c_re = msg->data.set_compute.c_re;
-        comp.c_im = msg->data.set_compute.c_im;
-        comp.d_re = msg->data.set_compute.d_re;
-        comp.d_im = msg->data.set_compute.d_im;
-        comp.n = msg->data.set_compute.n;
-    }
-    return ret;
-}
-
-void module_compute(message *msg) {
-    comp.cid = msg->data.compute.cid;
-    comp.chunk_re = msg->data.compute.re;
-    comp.chunk_im = msg->data.compute.im;
-    comp.chunk_n_re = msg->data.compute.n_re;
-    comp.chunk_n_im = msg->data.compute.n_im;
-
-    for (u_int8_t i = 0; i < comp.chunk_n_re; i++)
-    {
-        for (u_int8_t j = 0; j < comp.chunk_n_im; j++)
-        {
-            double complex z = i + j * I;
-            double complex c = comp.c_re + comp.c_im * I;
-            //init calc
-            z = complex_pow(z) + c;
-            u_int8_t iteration = 1;
-            
-            while (complex_abs(z) < 2 && iteration <= comp.n) {
-                z = complex_pow(z) + c;
-                if (iteration != comp.n)
-                {
-                    iteration++;
-                }
-            }
-            event ev = { .type = EV_COMPUTE_DATA};
-            ev.data.msg->data.compute_data.cid = comp.cid;
-            ev.data.msg->data.compute_data.i_re = i;
-            ev.data.msg->data.compute_data.i_im = j;
-            ev.data.msg->data.compute_data.iter = iteration;
-            queue_push(ev);
-        }
-    }
 }
 
 double complex complex_pow(double complex z) {
