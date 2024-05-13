@@ -52,7 +52,7 @@ void module_compute(message *msg, void *d) {
     {
         for (u_int8_t j = 0; j < comp_module.chunk_n_im; j++)
         {
-            double complex z = i + j * I;
+            double complex z = (i * comp_module.d_re + comp_module.chunk_re) + (j * comp_module.d_im + comp_module.chunk_im) * I;
             double complex c = comp_module.c_re + comp_module.c_im * I;
             //init calc
             z = complex_pow(z) + c;
@@ -72,7 +72,7 @@ void module_compute(message *msg, void *d) {
             msg_to_send.data.compute_data.cid = comp_module.cid;
             msg_to_send.data.compute_data.i_re = i;
             msg_to_send.data.compute_data.i_im = j;
-            msg_to_send.data.compute_data.iter = 30;
+            msg_to_send.data.compute_data.iter = iteration;
             printf("cid: %d, re: %d, im: %d, iter: %d\n", msg_to_send.data.compute_data.cid, msg_to_send.data.compute_data.i_re, msg_to_send.data.compute_data.i_im, msg_to_send.data.compute_data.iter);
             my_assert(fill_message_buf(&msg_to_send, msg_buf, sizeof(msg_buf), &msg_len), __func__, __LINE__, __FILE__);
             if (write(pipe_out, msg_buf, msg_len) == msg_len) {
