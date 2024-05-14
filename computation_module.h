@@ -25,10 +25,16 @@ typedef struct {
     bool computing;
     bool abort;
     bool done;
+
+    int pipe_out;
 } comp_module_t;
 
-bool set_module_compute(message *msg);
+bool set_module_compute(message *msg, void *d);
+void module_compute(message *msg_incoming);
 
-void module_compute(message *msg, void *d);
+void abort_module_compute(void);
+void enable_module_compute(void);
+
+bool is_module_aborted(void);
 
 #endif

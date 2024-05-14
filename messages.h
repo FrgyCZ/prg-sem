@@ -12,16 +12,16 @@
 
 // Definition of the communication messages
 typedef enum {
-    MSG_OK,           // ack of the received message
-    MSG_ERROR,        // report error on the previously received command
-    MSG_ABORT,        // abort - from user button or from serial port
-    MSG_DONE,         // report the requested work has been done
-    MSG_GET_VERSION,  // request version of the firmware
-    MSG_VERSION,      // send version of the firmware as major,minor, patch level, e.g., 1.0p1
-    MSG_STARTUP,      // init message (id, up to 9 bytes long string, cksum)
-    MSG_SET_COMPUTE,  // set computation parameters
-    MSG_COMPUTE,      // request computation of a batch of tasks (chunk_id, nbr_tasks)
-    MSG_COMPUTE_DATA, // computed result (chunk_id, result)
+    MSG_OK,             // ack of the received message
+    MSG_ERROR,          // report error on the previously received command
+    MSG_ABORT,          // abort - from user button or from serial port
+    MSG_DONE,           // report the requested work has been done
+    MSG_GET_VERSION,    // request version of the firmware
+    MSG_VERSION,        // send version of the firmware as major,minor, patch level, e.g., 1.0p1
+    MSG_STARTUP,        // init message (id, up to 9 bytes long string, cksum)
+    MSG_SET_COMPUTE,    // set computation parameters
+    MSG_COMPUTE,        // request computation of a batch of tasks (chunk_id, nbr_tasks)
+    MSG_COMPUTE_DATA,   // computed result (chunk_id, result)
     MSG_NBR
 } message_type;
 
@@ -51,6 +51,7 @@ typedef struct {
     double im;    // start of the y-coords (imaginary)
     uint8_t n_re; // number of cells in x-coords
     uint8_t n_im; // number of cells in y-coords
+    uint8_t forced;  // turning off abort 
 } msg_compute;
     
 typedef struct {

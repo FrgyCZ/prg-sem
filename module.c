@@ -83,7 +83,6 @@ void *read_pipe_thread(void *d) {
                 message *msg = my_alloc(sizeof(message));
                 if (parse_message_buf(msg_buf, len, msg)) {
                     event ev;
-                    printf("%d\n", msg->type);
                     ev.data.msg = msg;
                     switch (msg->type)
                     {

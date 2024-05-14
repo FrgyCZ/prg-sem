@@ -35,26 +35,28 @@ void *main_module_thread(void *d)
                 msg.data.version.patch = 69;
                 break;
             case EV_SET_COMPUTE:
-                info(set_module_compute(ev.data.msg) ? "Set compute" : "Set compute failed");
+                info(set_module_compute(ev.data.msg, d) ? "Set compute" : "Set compute failed");
                 break;
             case EV_COMPUTE:
-                //enable_comp();
-                module_compute(ev.data.msg, d);
+                if (ev.data.msg->data.compute.forced)
+                {
+                    enable_module_compute();
+                }
+                module_compute(ev.data.msg);
                 break;
-            case EV_COMPUTE_DATA:
+            case EV_COMPUTE_DATA_DONE:
                 msg.type = MSG_DONE;
                 break;
             case EV_ABORT:
-                debug("NEED TO ABORT");
+                abort_module_compute();
+                msg.type = MSG_OK;
                 break;
             default:
                 break;
         } // switch end
         if (msg.type != MSG_NBR) {
             my_assert(fill_message_buf(&msg, msg_buf, sizeof(msg_buf), &msg_len), __func__, __LINE__, __FILE__);
-            if (write(pipe_out, msg_buf, msg_len) == msg_len) {
-                debug("sent data to pipe_out\n");
-            } else {
+            if (!(write(pipe_out, msg_buf, msg_len) == msg_len)) {
                 error("send message fail\n");
             }
         }

@@ -81,8 +81,7 @@ void *gui_win_thread(void *d)
                         ev.type = EV_CLEAR_BUFFER;
                         break;
                     case SDLK_KP_1:
-                        // TODO  spustí výpočet
-                        ev.type = EV_COMPUTE;
+                        ev.type = EV_FORCED_COMPUTE;
                         break;
                 }
             } else if (event_sdl.type == SDL_KEYUP) {

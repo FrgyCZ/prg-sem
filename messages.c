@@ -29,7 +29,7 @@ bool get_message_size(uint8_t msg_type, int *len) {
         *len = 2 + 4 * sizeof(double) + 1; // 2 + 4 * params + n
         break;
     case MSG_COMPUTE:
-        *len = 2 + 1 + 2 * sizeof(double) + 2; // 2 + cid (8bit) + 2x(double - re, im) + 2 ( n_re, n_im)
+        *len = 2 + 1 + 2 * sizeof(double) + 3; // 2 + cid (8bit) + 2x(double - re, im) + 2 ( n_re, n_im) + 1 (forced)
         break;
     case MSG_COMPUTE_DATA:
         *len = 2 + 4; // cid, dx, dy, iter
@@ -83,7 +83,8 @@ bool fill_message_buf(const message *msg, uint8_t *buf, int size, int *len) {
         memcpy(&(buf[2 + 1 * sizeof(double)]), &(msg->data.compute.im), sizeof(double));
         buf[2 + 2 * sizeof(double) + 0] = msg->data.compute.n_re;
         buf[2 + 2 * sizeof(double) + 1] = msg->data.compute.n_im;
-        *len = 1 + 1 + 2 * sizeof(double) + 2;
+        buf[2 + 2 * sizeof(double) + 2] = msg->data.compute.forced;
+        *len = 1 + 1 + 2 * sizeof(double) + 3;
         break;
     case MSG_COMPUTE_DATA:
         buf[1] = msg->data.compute_data.cid;
@@ -151,6 +152,7 @@ bool parse_message_buf(const uint8_t *buf, int size, message *msg) {
             memcpy(&(msg->data.compute.im), &(buf[2 + 1 * sizeof(double)]), sizeof(double));
             msg->data.compute.n_re = buf[2 + 2 * sizeof(double) + 0];
             msg->data.compute.n_im = buf[2 + 2 * sizeof(double) + 1];
+            msg->data.compute.forced = buf[2 + 2 * sizeof(double) + 2];
             break;
         case MSG_COMPUTE_DATA: // type + chunk_id + task_id + result
             msg->data.compute_data.cid = buf[1];

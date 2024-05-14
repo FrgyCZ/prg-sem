@@ -27,7 +27,8 @@ typedef enum {
     EV_REFRESH,
     EV_PIPE_IN_MESSAGE,
     EV_STARTUP,
-    EV_COMPUTE_DATA,
+    EV_COMPUTE_DATA_DONE,
+    EV_FORCED_COMPUTE,
     EV_TYPE_NUM
 } event_type;
 

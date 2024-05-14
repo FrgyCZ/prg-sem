@@ -37,9 +37,14 @@ void *main_thread(void *d) {
         case EV_SET_COMPUTE:
             info(set_compute(&msg) ? "Set compute" : "Set compute failed");
             break;
-        case EV_COMPUTE:
+        case EV_FORCED_COMPUTE:
             enable_comp();
             info(compute(&msg) ? "Compute" : "Compute failed");
+            msg.data.compute.forced = true;
+            break;
+        case EV_COMPUTE:
+            info(compute(&msg) ? "Compute" : "Compute failed");
+            msg.data.compute.forced = false;
             break;
         case EV_COMPUTE_CPU:
             cpu_comp();
