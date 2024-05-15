@@ -15,13 +15,17 @@ static struct {
     int w;
     int h;
     unsigned char *img;
-} gui = { .img = NULL };
+    char *c_text;
+    char *depth_text;
+} gui = { .img = NULL, .c_text = NULL, .depth_text = NULL};
 
 static bool control_pressed = false;
 
 void gui_init(void) {
     get_grid_size(&gui.w, &gui.h);
     gui.img = my_alloc(gui.w * gui.h * 3);
+    gui.c_text = my_alloc(256);
+    gui.depth_text = my_alloc(256);
     my_assert(xwin_init(gui.w, gui.h) == 0, __func__, __LINE__, __FILE__);
 }
 
@@ -30,18 +34,35 @@ void gui_cleanup(void) {
         free(gui.img);
         gui.img = NULL;
     }
+    if (gui.c_text) {
+        free(gui.c_text);
+        gui.c_text = NULL;
+    }
+    if (gui.depth_text) {
+        free(gui.depth_text);
+        gui.depth_text = NULL;
+    }
     xwin_close();
 }
 
 void gui_refresh(void) {
+    render_text();
     if (gui.img) {
         update_image(gui.w, gui.h, gui.img);
-        xwin_redraw(gui.w, gui.h, gui.img);
+        xwin_redraw(gui.w, gui.h, gui.img, gui.c_text, gui.depth_text);
     }
 }
 
-void gui_save_image() {
+void render_text(void) {
+    get_info(gui.c_text, gui.depth_text);
+}
+
+void gui_save_image(void) {
     save_image();
+}
+
+void gui_record_animation(int frame) {
+    record_animation(frame);
 }
 
 void *gui_win_thread(void *d) {

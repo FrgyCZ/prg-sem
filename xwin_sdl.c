@@ -5,13 +5,14 @@
  */
 
 #include <SDL2/SDL.h>
-
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "utils.h"
 #include "xwin_sdl.h"
 
 static SDL_Window *win = NULL;
+static TTF_Font *font = NULL;
 
 static unsigned char icon_32x32_bits[] = {
    0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x20, 0x00, 0x00, 0x23, 0x00, 0x01, 0x29, 0x00, 0x01, 0x2e, 0x00, 0x02, 0x31, 0x00, 0x02, 0x34, 0x00, 0x02, 0x35, 0x00, 0x02, 0x33, 0x00, 0x02, 0x31, 0x00, 0x01, 0x2d, 0x00, 0x01, 0x29, 0x00, 0x00, 0x23, 0x00, 0x00, 0x20, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21,
@@ -57,18 +58,25 @@ int xwin_init(int w, int h) {
     SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(icon_32x32_bits, 32, 32, 24, 32 * 3, 0xff, 0xff00, 0xff0000, 0x0000);
     SDL_SetWindowIcon(win, surface);
     SDL_FreeSurface(surface);
+    //font init
+    TTF_Init();
+    font = TTF_OpenFont("font.ttf", 36);
+    printf("Font load %s\n", (font == NULL) ? "failed" : "succeeded");
     return r;
 }
 
 void xwin_close() {
     my_assert(win != NULL, __func__, __LINE__, __FILE__);
+    TTF_Quit();
     SDL_DestroyWindow(win);
     SDL_Quit();
 }
 
-void xwin_redraw(int w, int h, unsigned char *img) {
+void xwin_redraw(int w, int h, unsigned char *img, const char *c_text, const char *depth_text) {
     my_assert(img && win, __func__, __LINE__, __FILE__);
+    
     SDL_Surface *scr = SDL_GetWindowSurface(win);
+    //add text to surface
     for (int y = 0; y < scr->h; ++y) {
         for (int x = 0; x < scr->w; ++x) {
             const int idx = (y * scr->w + x) * scr->format->BytesPerPixel;
@@ -78,7 +86,20 @@ void xwin_redraw(int w, int h, unsigned char *img) {
             *(px + scr->format->Bshift / 8) = *(img++);
         }
     }
+    render_text_to_win(c_text, 10, 10);
+    render_text_to_win(depth_text, 10, 50);
     SDL_UpdateWindowSurface(win);
+}
+
+void render_text_to_win(const char *text, int x, int y) {
+    if (font == NULL || text == NULL) {
+        return;
+    }
+    SDL_Color color = {255, 255, 255};
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Rect rect = {x, y, surface->w, surface->h};
+    SDL_BlitSurface(surface, NULL, SDL_GetWindowSurface(win), &rect);
+    SDL_FreeSurface(surface);
 }
 
 void xwin_poll_events(void) {
@@ -89,6 +110,14 @@ void xwin_poll_events(void) {
 void save_image(void) {
     SDL_Surface *scr = SDL_GetWindowSurface(win);
     IMG_SavePNG(scr, "./image.png");
+}
+
+void record_animation(int frame) {
+    SDL_Surface *scr = SDL_GetWindowSurface(win);
+    char filename[32];
+    sprintf(filename, "./frames/frame%03d.png", frame);
+    printf("Saving frame %s\n", filename);
+    IMG_SavePNG(scr, filename);
 }
 
 /* end of xwin_sdl.c */

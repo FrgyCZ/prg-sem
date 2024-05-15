@@ -11,7 +11,7 @@
 typedef struct {
     double c_re;
     double c_im;
-    int n;
+    double n;
 
     double range_re_min;
     double range_re_max;
@@ -76,6 +76,8 @@ void move(double x, double y);
 
 void change_c_re(double x);
 void change_c_im(double y);
+
+void get_info(char *c, char *depth);
 
 #endif
 

@@ -12,6 +12,7 @@
 static void process_pipe_message(event *const ev);
 
 static bool debug_enabled = false;
+static int frame = 0;
 
 void *main_thread(void *d) {
     my_assert(d != NULL, __func__, __LINE__, __FILE__);
@@ -95,19 +96,19 @@ void *main_thread(void *d) {
             debug_view();
             break;
         case EV_C_RE_INCREASE:
-            change_c_re(0.1);
+            change_c_re(0.05);
             debug_view();
             break;
         case EV_C_RE_DECREASE:
-            change_c_re(-0.1);
+            change_c_re(-0.05);
             debug_view();
             break;
         case EV_C_IM_INCREASE:
-            change_c_im(0.1);
+            change_c_im(0.05);
             debug_view();
             break;
         case EV_C_IM_DECREASE:
-            change_c_im(-0.1);
+            change_c_im(-0.05);
             debug_view();
             break;
         case EV_TOGGLE_DEBUG:
@@ -185,6 +186,7 @@ void debug_view(void) {
     {
         cpu_comp();
         gui_refresh();
+        gui_record_animation(frame++);
     }
 }
 

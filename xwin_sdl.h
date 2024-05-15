@@ -9,10 +9,12 @@
 
 int xwin_init(int w, int h);
 void xwin_close();
-void xwin_redraw(int w, int h, unsigned char *img);
+void xwin_redraw(int w, int h, unsigned char *img, const char *c_text, const char *depth_text);
+void render_text_to_win(const char *text, int x, int y);
 void xwin_poll_events(void);
 
 void save_image(void);
+void record_animation(int frame);
 
 #endif
 

@@ -6,7 +6,7 @@ LDFLAGS=-lpthread
 BINARIES=prgsem
 
 CFLAGS+=$(shell sdl2-config --cflags)
-LDFLAGS+=$(shell sdl2-config --libs) -lSDL2_image
+LDFLAGS+=$(shell sdl2-config --libs) -lSDL2_image -lSDL2_ttf
 
 # Exclude module.c from compilation
 MODULE_EXCLUDE=module.c

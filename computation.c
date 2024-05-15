@@ -79,7 +79,7 @@ bool set_compute(message *msg) {
         msg->data.set_compute.c_im = comp.c_im;
         msg->data.set_compute.d_re = comp.d_re;
         msg->data.set_compute.d_im = comp.d_im;
-        msg->data.set_compute.n = comp.n;
+        msg->data.set_compute.n = (int)comp.n;
         comp.done = false;
     }
     return ret;
@@ -180,9 +180,9 @@ int cpu_fractal(int x, int y) {
 	//init calc
 	z = complex_pow(z) + c;
     int iteration = 1;
-    while (complex_abs(z) < 2 && iteration <= comp.n) {
+    while (complex_abs(z) < 2 && iteration <= (int)comp.n) {
         z = complex_pow(z) + c;
-        if (iteration != comp.n)
+        if (iteration != (int)comp.n)
 		{
 			iteration++;
 		} else {
@@ -239,7 +239,7 @@ void zoom(double scale){
     {
         comp.n *= 1.25;
     }
-    printf("n: %d\n", comp.n);
+    printf("n: %d\n", (int)comp.n);
     //zoom level
     comp.zoom_level *= scale;
     //range
@@ -265,13 +265,17 @@ void move(double x, double y){
 }
 
 void change_c_re(double x){
-    printf("c_re: %f\n", comp.c_re);
     comp.c_re += x;
-    printf("c_re: %f\n", comp.c_re);
 }
 
 void change_c_im(double y){
     comp.c_im += y;
 }
 
+void get_info(char *c, char *depth){
+    //send current c value
+    sprintf(c, "c: %.2f + %.2fi", comp.c_re, comp.c_im);
+    //send current depth
+    sprintf(depth, "depth: %d", (int)comp.n);
+}
 /* end of computation.c */

@@ -4,7 +4,9 @@
 void gui_init(void);
 void gui_cleanup(void);
 void gui_refresh(void);
+void render_text(void);
 void gui_save_image(void);
+void gui_record_animation(int frame);
 
 void *gui_win_thread(void *d);
 
