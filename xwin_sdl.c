@@ -83,8 +83,12 @@ void xwin_redraw(int w, int h, unsigned char *img) {
 
 void xwin_poll_events(void) {
     SDL_Event event;
-    while (SDL_PollEvent(&event))
-        ;
+    while (SDL_PollEvent(&event));
+}
+
+void save_image(void) {
+    SDL_Surface *scr = SDL_GetWindowSurface(win);
+    IMG_SavePNG(scr, "./image.png");
 }
 
 /* end of xwin_sdl.c */

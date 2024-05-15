@@ -3,4 +3,6 @@
 
 void *main_thread(void *);
 
+void debug_view(void);
+
 #endif

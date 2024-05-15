@@ -11,6 +11,8 @@
 
 static void process_pipe_message(event *const ev);
 
+static bool debug_enabled = false;
+
 void *main_thread(void *d) {
     my_assert(d != NULL, __func__, __LINE__, __FILE__);
     int pipe_out = *(int *)d;
@@ -64,6 +66,53 @@ void *main_thread(void *d) {
             break;
         case EV_CLEAR_BUFFER:
             clear_buffer();
+            break;
+        case EV_ZOOM_IN:
+            zoom(1.0 / ZOOM_COEFFICIENT);
+            debug_view();
+            break;
+        case EV_ZOOM_OUT:
+            zoom(ZOOM_COEFFICIENT);
+            debug_view();
+            break;
+        case EV_SAVE_IMAGE:
+            gui_save_image();
+            break;
+        case EV_UP:
+            move(0, 1);
+            debug_view();
+            break;
+        case EV_DOWN:
+            move(0, -1);
+            debug_view();
+            break;
+        case EV_LEFT:
+            move(-1, 0);
+            debug_view();
+            break;
+        case EV_RIGHT:
+            move(1, 0);
+            debug_view();
+            break;
+        case EV_C_RE_INCREASE:
+            change_c_re(0.1);
+            debug_view();
+            break;
+        case EV_C_RE_DECREASE:
+            change_c_re(-0.1);
+            debug_view();
+            break;
+        case EV_C_IM_INCREASE:
+            change_c_im(0.1);
+            debug_view();
+            break;
+        case EV_C_IM_DECREASE:
+            change_c_im(-0.1);
+            debug_view();
+            break;
+        case EV_TOGGLE_DEBUG:
+            debug_enabled = !debug_enabled;
+            printf("Debug %s\n", debug_enabled ? "enabled" : "disabled");
             break;
         default:
             break;
@@ -129,6 +178,14 @@ void process_pipe_message(event *const ev) {
     }
     free(ev->data.msg);
     ev->data.msg = NULL;
+}
+
+void debug_view(void) {
+    if (debug_enabled)
+    {
+        cpu_comp();
+        gui_refresh();
+    }
 }
 
 /* end of b3b36prg-sem/main.c */

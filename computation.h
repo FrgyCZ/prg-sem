@@ -6,6 +6,8 @@
 #ifndef __COMPUTATION_H__
 #define __COMPUTATION_H__
 
+#define ZOOM_COEFFICIENT 2
+
 typedef struct {
     double c_re;
     double c_im;
@@ -38,6 +40,7 @@ typedef struct {
     bool abort;
     bool done;
 
+    double zoom_level;
 } comp_t;
 
 void computation_init(void);
@@ -67,6 +70,12 @@ double complex complex_pow(double complex z);
 double complex_abs(double complex z);
 double my_sqrt(double x);
 double my_abs(double x);
+
+void zoom(double scale);
+void move(double x, double y);
+
+void change_c_re(double x);
+void change_c_im(double y);
 
 #endif
 

@@ -22,9 +22,7 @@ typedef struct {
     uint8_t chunk_n_re;
     uint8_t chunk_n_im;
 
-    bool computing;
     bool abort;
-    bool done;
 
     int pipe_out;
 } comp_module_t;
@@ -36,5 +34,8 @@ void abort_module_compute(void);
 void enable_module_compute(void);
 
 bool is_module_aborted(void);
+
+void prepare_pixel_to_msg(u_int8_t i, u_int8_t j, u_int8_t iteration);
+void send_message_to_pipe(message *msg);
 
 #endif

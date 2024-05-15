@@ -1,4 +1,3 @@
-
 #include <SDL2/SDL.h>
 #include "xwin_sdl.h"
 
@@ -7,7 +6,6 @@
 
 #include "event_queue.h"
 #include "gui.h"
-
 
 #ifndef SDL_EVENT_POLL_WAIT_MS
 #define SDL_EVENT_POLL_WAIT_MS 1
@@ -19,14 +17,15 @@ static struct {
     unsigned char *img;
 } gui = { .img = NULL };
 
-void gui_init(void)
-{
+static bool control_pressed = false;
+
+void gui_init(void) {
     get_grid_size(&gui.w, &gui.h);
     gui.img = my_alloc(gui.w * gui.h * 3);
     my_assert(xwin_init(gui.w, gui.h) == 0, __func__, __LINE__, __FILE__);
 }
-void gui_cleanup(void)
-{
+
+void gui_cleanup(void) {
     if (gui.img) {
         free(gui.img);
         gui.img = NULL;
@@ -34,16 +33,18 @@ void gui_cleanup(void)
     xwin_close();
 }
 
-void gui_refresh(void)
-{
+void gui_refresh(void) {
     if (gui.img) {
         update_image(gui.w, gui.h, gui.img);
         xwin_redraw(gui.w, gui.h, gui.img);
     }
 }
 
-void *gui_win_thread(void *d)
-{
+void gui_save_image() {
+    save_image();
+}
+
+void *gui_win_thread(void *d) {
     info("gui_win_thread - start");
     bool quit = false;
     SDL_Event event_sdl;
@@ -53,9 +54,12 @@ void *gui_win_thread(void *d)
         if (SDL_PollEvent(&event_sdl)) {
             if (event_sdl.type == SDL_QUIT) {
                 ev.type = EV_QUIT;
-            }
-            else if (event_sdl.type == SDL_KEYDOWN) {
+            } else if (event_sdl.type == SDL_KEYDOWN) {
                 switch (event_sdl.key.keysym.sym) {
+                    case SDLK_LCTRL:
+                    case SDLK_RCTRL:
+                        control_pressed = true;
+                        break;
                     case SDLK_q:
                         ev.type = EV_QUIT;
                         break;
@@ -83,9 +87,70 @@ void *gui_win_thread(void *d)
                     case SDLK_KP_1:
                         ev.type = EV_FORCED_COMPUTE;
                         break;
+                    case SDLK_KP_PLUS:
+                        ev.type = EV_ZOOM_IN;
+                        break;
+                    case SDLK_KP_MINUS:
+                        ev.type = EV_ZOOM_OUT;
+                        break;
+                    case SDLK_i:
+                        ev.type = EV_SAVE_IMAGE;
+                        break;
+                    case SDLK_UP:
+                        if (control_pressed)
+                        {
+                            ev.type = EV_C_RE_INCREASE;
+                        }
+                        else
+                        {
+                            ev.type = EV_UP;
+                        }                        
+                        break;
+                    case SDLK_DOWN:
+                        if (control_pressed)
+                        {
+                            ev.type = EV_C_RE_DECREASE;
+                        }
+                        else
+                        {
+                            ev.type = EV_DOWN;
+                        }
+                        break;
+                    case SDLK_LEFT:
+                        if (control_pressed)
+                        {
+                            ev.type = EV_C_IM_DECREASE;
+                        }
+                        else
+                        {
+                            ev.type = EV_LEFT;
+                        }
+                        break;
+                    case SDLK_RIGHT:
+                        if (control_pressed)
+                        {
+                            ev.type = EV_C_IM_INCREASE;
+                        }
+                        else
+                        {
+                            ev.type = EV_RIGHT;
+                        }
+                        break;
+                    case SDLK_d:
+                        ev.type = EV_TOGGLE_DEBUG;
+                        break;
+                    default:
+                        break;
                 }
             } else if (event_sdl.type == SDL_KEYUP) {
-                info("gui_win_thread - keyup");
+                switch (event_sdl.key.keysym.sym) {
+                    case SDLK_LCTRL:
+                    case SDLK_RCTRL:
+                        control_pressed = false;
+                        break;
+                    default:
+                        break;
+                }
             }
             if (event_sdl.type == SDL_MOUSEBUTTONDOWN) {
                 info("gui_win_thread - mousebuttondown");

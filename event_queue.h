@@ -29,6 +29,18 @@ typedef enum {
     EV_STARTUP,
     EV_COMPUTE_DATA_DONE,
     EV_FORCED_COMPUTE,
+    EV_ZOOM_IN,
+    EV_ZOOM_OUT,
+    EV_SAVE_IMAGE,
+    EV_UP,
+    EV_DOWN,
+    EV_RIGHT,
+    EV_LEFT,
+    EV_C_RE_INCREASE,
+    EV_C_RE_DECREASE,
+    EV_C_IM_INCREASE,
+    EV_C_IM_DECREASE,
+    EV_TOGGLE_DEBUG,
     EV_TYPE_NUM
 } event_type;
 

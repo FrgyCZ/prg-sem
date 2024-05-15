@@ -6,18 +6,15 @@
 #include "utils.h"
 
 comp_t comp = {
+    .c_re = -0.4,
+    .c_im = 0.6,
 
-    // TODO change the fractol structor
-    .c_re = -0.4 * 1,
-    .c_im = 0.6 * 1,
-    // TODO change the color of the fractol
     .n = 60 * 1,
 
-    // TODO zooming to center replace the 1 with a zoom factor >1 smaller <1 bigger
-    .range_re_min = -1.6 * 1,
-    .range_re_max = 1.6 * 1,
-    .range_im_min = -1.1 * 1,
-    .range_im_max = 1.1 * 1,
+    .range_re_min = -1.6,
+    .range_re_max = 1.6,
+    .range_im_min = -1.1,
+    .range_im_max = 1.1,
 
     .grid_w = 640,
     .grid_h = 480,
@@ -39,7 +36,10 @@ comp_t comp = {
     .grid = NULL,
     .computing = false,
     .abort = false,
-    .done = false};
+    .done = false,
+    
+    .zoom_level = 1.0
+};
 
 void computation_init(void) {
     comp.grid = my_alloc(comp.grid_w * comp.grid_h * sizeof(uint8_t));
@@ -173,20 +173,21 @@ int cpu_fractal(int x, int y) {
     y = comp.grid_h - y;
     double scale_x = (comp.range_re_max - comp.range_re_min);
     double scale_y = (comp.range_im_max - comp.range_im_min);
-    double mapped_x = ((double)x / (double)comp.grid_w) * scale_x - scale_x / 2;
-    double mapped_y = ((double)y / (double)comp.grid_h) * scale_y - scale_y / 2;
+    double mapped_x = comp.range_re_min + ((double)x / (double)comp.grid_w) * scale_x;
+    double mapped_y = comp.range_im_min + ((double)y / (double)comp.grid_h) * scale_y;
     double complex z = mapped_x + mapped_y * I;
 	double complex c = comp.c_re + comp.c_im * I;
 	//init calc
 	z = complex_pow(z) + c;
     int iteration = 1;
-    
     while (complex_abs(z) < 2 && iteration <= comp.n) {
         z = complex_pow(z) + c;
         if (iteration != comp.n)
 		{
 			iteration++;
-		}
+		} else {
+            break;
+        }
     }
     return iteration;
 }
@@ -226,6 +227,51 @@ double my_abs(double x) {
         return x * -1;
     }
     return x;
+}
+
+void zoom(double scale){
+    //change fractal compute depth
+    if (scale > 1.0)    
+    {
+        comp.n /= 1.25;
+    }
+    else
+    {
+        comp.n *= 1.25;
+    }
+    printf("n: %d\n", comp.n);
+    //zoom level
+    comp.zoom_level *= scale;
+    //range
+    double range_re = comp.range_re_max - comp.range_re_min;
+    double range_im = comp.range_im_max - comp.range_im_min;
+    comp.range_re_min += range_re * (1 - scale) / 2;
+    comp.range_re_max -= range_re * (1 - scale) / 2;
+    comp.range_im_min += range_im * (1 - scale) / 2;
+    comp.range_im_max -= range_im * (1 - scale) / 2;
+    //difference
+    comp.d_re = (comp.range_re_max - comp.range_re_min) / (1. * comp.grid_w);
+    comp.d_im = -(comp.range_im_max - comp.range_im_min) / (1. * comp.grid_h);
+}
+
+void move(double x, double y){
+    x *= comp.zoom_level;
+    y *= comp.zoom_level;
+    printf("x: %f, y: %f\n", x, y);
+    comp.range_re_min += x;
+    comp.range_im_min += y;
+    comp.range_re_max += x;
+    comp.range_im_max += y;
+}
+
+void change_c_re(double x){
+    printf("c_re: %f\n", comp.c_re);
+    comp.c_re += x;
+    printf("c_re: %f\n", comp.c_re);
+}
+
+void change_c_im(double y){
+    comp.c_im += y;
 }
 
 /* end of computation.c */
