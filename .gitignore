@@ -1,4 +1,4 @@
 #ignore folder frames
-frames/
-bin/
-.vscode/
+./frames/
+./bin/
+./.vscode/
