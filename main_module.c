@@ -26,9 +26,11 @@ void *main_module_thread(void *d)
                 debug("Quit received");
                 break;
             case EV_STARTUP:
+                info("Wakey wakey!");
                 send_startup_message(&msg);
                 break;
             case EV_GET_VERSION:
+                info("Get version requested");
                 msg.type = MSG_VERSION;
                 msg.data.version.major = 4;
                 msg.data.version.minor = 20;
@@ -41,17 +43,28 @@ void *main_module_thread(void *d)
                 if (ev.data.msg->data.compute.forced)
                 {
                     enable_module_compute();
+                    info("New forced compute requested");
+                }
+                else {
+                    if (is_module_aborted())
+                    {
+                        warn("Compute requested, but the process has been previously aborted");
+                        info("If you want to continue, do so by sending a forced compute event");
+                    }
                 }
                 module_compute(ev.data.msg);
                 break;
             case EV_COMPUTE_DATA_DONE:
+                info("Compute data done");
                 msg.type = MSG_DONE;
                 break;
             case EV_ABORT:
+                info("Abort requested");
                 abort_module_compute();
                 msg.type = MSG_OK;
                 break;
             case EV_COMPUTE_ABORT:
+                info("Compute abort requested");
                 abort_module_compute();
                 msg.type = MSG_ABORT;
                 break;
@@ -74,11 +87,17 @@ void *main_module_thread(void *d)
 }
 
 void send_startup_message(message *msg) {
-    msg->data.startup.message[0] = 'M';
-    msg->data.startup.message[1] = 'R';
-    msg->data.startup.message[2] = 'D';
-    msg->data.startup.message[3] = 'A';
-    msg->data.startup.message[4] = 'T';
-    msg->data.startup.message[5] = '\0';
+    msg->data.startup.message[0] = 'J';
+    msg->data.startup.message[1] = 'a';
+    msg->data.startup.message[2] = 'k';
+    msg->data.startup.message[3] = 'u';
+    msg->data.startup.message[4] = 'b';
+    msg->data.startup.message[5] = ' ';
+    msg->data.startup.message[6] = 'K';
+    msg->data.startup.message[7] = 'O';
+    msg->data.startup.message[8] = 'L';
+    msg->data.startup.message[9] = 'A';
+    msg->data.startup.message[10] = 'C';
+    msg->data.startup.message[11] = '\0';
     msg->type = MSG_STARTUP;
 }

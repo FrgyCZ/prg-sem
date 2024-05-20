@@ -25,7 +25,7 @@ typedef enum {
     MSG_NBR
 } message_type;
 
-#define STARTUP_MSG_LEN 6
+#define STARTUP_MSG_LEN 12
 
 typedef struct {
     uint8_t major;

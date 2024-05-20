@@ -13,7 +13,7 @@
 
 static SDL_Window *win = NULL;
 static TTF_Font *font = NULL;
-static TTF_Font *font_small = NULL;
+static TTF_Font *font_menu = NULL;
 
 static unsigned char icon_32x32_bits[] = {
    0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x20, 0x00, 0x00, 0x23, 0x00, 0x01, 0x29, 0x00, 0x01, 0x2e, 0x00, 0x02, 0x31, 0x00, 0x02, 0x34, 0x00, 0x02, 0x35, 0x00, 0x02, 0x33, 0x00, 0x02, 0x31, 0x00, 0x01, 0x2d, 0x00, 0x01, 0x29, 0x00, 0x00, 0x23, 0x00, 0x00, 0x20, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21,
@@ -62,8 +62,9 @@ int xwin_init(int w, int h) {
     //font init
     TTF_Init();
     font = TTF_OpenFont("font.ttf", 36);
-    font_small = TTF_OpenFont("font.ttf", 26);
-    printf("Font load %s\n", (font == NULL) ? "failed" : "succeeded");
+    font_menu = TTF_OpenFont("menu.ttf", 20);
+    printf("Main font load %s\n", (font == NULL) ? "failed" : "succeeded");
+    printf("Menu font load %s\n", (font_menu == NULL) ? "failed" : "succeeded");
     return r;
 }
 
@@ -77,15 +78,23 @@ void xwin_close() {
 void xwin_display_startup_message(void) {
     SDL_Surface *scr = SDL_GetWindowSurface(win);
     SDL_FillRect(scr, NULL, SDL_MapRGB(scr->format, 0, 0, 0));
-    render_text_to_win("PRG Semester Project", 10, 10, true);
-    render_text_to_win("Compute on module - 1  Set compute on module - S", 10, 60, true);
-    render_text_to_win("Reset chunk ID - R   Abort - A", 10, 110, true);
-    render_text_to_win("Get version from module - G   Compute on CPU - C", 10, 160, true);
-    render_text_to_win("Refresh GUI - P   Clear GUI - L", 10, 210, true);
-    render_text_to_win("Zoom in/out - +/-   Move - UP/DOWN/LEFT/RIGHT", 10, 260, true);
-    render_text_to_win("Change C_re - CTRL+UP/DOWN   Change C_im - CTRL+LEFT/RIGHT", 10, 310, true);
-    render_text_to_win("Activate debug mode (compute with CPU on every action) - D", 10, 360, true);
-    render_text_to_win("PRESS SPACE TO CONTINUE... (or Q to quit)", 10, 420, true);
+    render_text_to_win("PRG Semester Project", 10, 10, false);
+    render_text_to_win("Compute on module -> 1", 10, 60, true);
+    render_text_to_win("Set compute on module -> S", 10, 85, true);
+    render_text_to_win("Reset chunk ID -> R", 10, 110, true);
+    render_text_to_win("Abort -> A", 10, 135, true);
+    render_text_to_win("Get version from module -> G", 10, 160, true);
+    render_text_to_win("Compute on CPU -> C", 10, 185, true);
+    render_text_to_win("Refresh GUI -> P", 10, 210, true);
+    render_text_to_win("Clear GUI -> L", 10, 235, true);
+    render_text_to_win("Zoom in/out -> +/-", 10, 260, true);
+    render_text_to_win("Change window size -> (CTRL)+/-", 10, 285, true);
+    render_text_to_win("Move -> UP/DOWN/LEFT/RIGHT", 10, 310, true);
+    render_text_to_win("Change C_re -> (CTRL)UP/DOWN", 10, 335, true);
+    render_text_to_win("Change C_im -> (CTRL)LEFT/RIGHT", 10, 360, true);
+    render_text_to_win("Activate debug mode -> D", 10, 385, true);
+    render_text_to_win("Toggle animation -> F", 10, 410, true);
+    render_text_to_win("PRESS SPACE TO CONTINUE... (or Q to quit)", 10, 445, true);
     SDL_UpdateWindowSurface(win);
 }
 
@@ -115,7 +124,7 @@ void change_window_size(int w, int h) {
 void render_text_to_win(const char *text, int x, int y, bool info_text) {
     TTF_Font *current_font = NULL;
     if (info_text) {
-        current_font = font_small;
+        current_font = font_menu;
     }
     else {
         current_font = font;

@@ -22,6 +22,7 @@ static struct {
 static bool control_pressed = false;
 static bool startup_active = true;
 static bool startup_quit = false;
+static bool animation_active = false;
 
 void gui_init(void) {
     get_grid_size(&gui.w, &gui.h);
@@ -107,6 +108,13 @@ void display_startup_message(void) {
     gui_refresh();
 }
 
+void gui_run_animation(void) {
+    change_c_re(C_CHANGE_COEFFICIENT);
+    cpu_comp();
+    gui_refresh();
+    SDL_Delay(100);
+}
+
 void *gui_win_thread(void *d) {
     info("gui_win_thread - start");
     bool quit = false;
@@ -116,6 +124,10 @@ void *gui_win_thread(void *d) {
         if (startup_active)
         {
             continue;
+        }
+        if (animation_active)
+        {
+            gui_run_animation();
         }
         ev.type = EV_TYPE_NUM;
         if (SDL_PollEvent(&event_sdl)) {
@@ -151,6 +163,10 @@ void *gui_win_thread(void *d) {
                     case SDLK_l:
                         ev.type = EV_CLEAR_BUFFER;
                         break;
+                    case SDLK_f:
+                        animation_active = !animation_active;
+                        break;
+                    case SDLK_1:
                     case SDLK_KP_1:
                         ev.type = EV_FORCED_COMPUTE;
                         break;

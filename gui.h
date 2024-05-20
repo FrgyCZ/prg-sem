@@ -9,6 +9,7 @@ void gui_save_image(void);
 void gui_record_animation(int frame);
 void gui_change_window_size(int w, int h);
 void display_startup_message(void);
+void gui_run_animation(void);
 
 void *gui_win_thread(void *d);
 
