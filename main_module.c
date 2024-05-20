@@ -51,10 +51,14 @@ void *main_module_thread(void *d)
                 abort_module_compute();
                 msg.type = MSG_OK;
                 break;
+            case EV_COMPUTE_ABORT:
+                abort_module_compute();
+                msg.type = MSG_ABORT;
+                break;
             default:
                 break;
         } // switch end
-        if (!(ev.type == EV_QUIT))
+        if (!(ev.type == EV_QUIT || ev.type == EV_COMPUTE_ABORT))
         {
             free(ev.data.msg);
         }

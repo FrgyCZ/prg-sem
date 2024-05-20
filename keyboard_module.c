@@ -11,7 +11,11 @@ void *keyboard_thread(void *d) {
     int c;
     event ev;
     while ((c = getchar()) != 'q') {
-        //wait for exit
+        if (c == 'a')
+        {
+            ev.type = EV_COMPUTE_ABORT;
+            queue_push(ev);
+        }
     } // end while
     set_quit();
     ev.type = EV_QUIT;

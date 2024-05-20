@@ -8,7 +8,7 @@
 
 #define ZOOM_COEFFICIENT 2
 #define MOVE_AMOUNT 1
-#define C_CHANGE_COEFFICIENT 0.05
+#define C_CHANGE_COEFFICIENT 0.01
 
 typedef struct {
     double c_re;
