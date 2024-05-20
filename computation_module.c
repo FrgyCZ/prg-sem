@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <complex.h>
 
-#include "computation.h"
 #include "computation_module.h"
 #include "event_queue.h"
 #include "messages.h"
@@ -61,10 +60,10 @@ void module_compute(message *msg_incoming) {
                 double complex z = (i * comp_module.d_re + comp_module.chunk_re) + (j * comp_module.d_im + comp_module.chunk_im) * I;
                 double complex c = comp_module.c_re + comp_module.c_im * I;
                 //init calc
-                z = complex_pow(z) + c;
+                z = complex_module_pow(z) + c;
                 u_int8_t iteration = 1;
-                while (complex_abs(z) < 2 && iteration <= comp_module.n) {
-                    z = complex_pow(z) + c;
+                while (complex_module_abs(z) < 2 && iteration <= comp_module.n) {
+                    z = complex_module_pow(z) + c;
                     if (iteration != comp_module.n)
                     {
                         iteration++;
@@ -109,4 +108,41 @@ void send_message_to_pipe(message *msg) {
     if (!(write(comp_module.pipe_out, msg_buf, msg_len) == msg_len)) {
         error("Sending message to incoming pipe failed\n");
     }
+}
+
+double complex complex_module_pow(double complex z) {
+    double real = creal(z);
+    double imag = cimag(z);
+    double realPart = real * real - imag * imag;
+    double imagPart = real * imag * 2;
+    return realPart + imagPart * I;
+}
+
+double complex_module_abs(double complex z) {
+    double real = creal(z);
+    double imag = cimag(z);
+    return (my_module_sqrt(real * real + imag * imag));
+}
+
+double my_module_sqrt(double x) {
+    //special case for 0 and 1
+    if (x < 2){
+        return x;
+    }
+    double y = x;
+    double z = (y + (x / y)) / 2;
+    //continue iterating until the difference between y and z is less than 0.00001
+    while (my_module_abs(y - z) >= 0.00001) {
+        y = z;
+        z = (y + (x / y)) / 2;
+    }
+    return z;
+}
+
+double my_module_abs(double x) {
+    if (x < 0)
+    {
+        return x * -1;
+    }
+    return x;
 }

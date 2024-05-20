@@ -41,6 +41,9 @@ typedef enum {
     EV_C_IM_INCREASE,
     EV_C_IM_DECREASE,
     EV_TOGGLE_DEBUG,
+    EV_CLOSE_STARTUP,
+    EV_RESOLUTION_UP,
+    EV_RESOLUTION_DOWN,
     EV_TYPE_NUM
 } event_type;
 

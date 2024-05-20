@@ -7,6 +7,8 @@
 #define __COMPUTATION_H__
 
 #define ZOOM_COEFFICIENT 2
+#define MOVE_AMOUNT 1
+#define C_CHANGE_COEFFICIENT 0.05
 
 typedef struct {
     double c_re;
@@ -28,7 +30,7 @@ typedef struct {
     double d_im;
 
     int nbr_chunks;
-    int cid;
+    double cid;
     double chunk_re;
     double chunk_im;
 
@@ -78,6 +80,8 @@ void change_c_re(double x);
 void change_c_im(double y);
 
 void get_info(char *c, char *depth);
+
+void change_resolution(bool up);
 
 #endif
 

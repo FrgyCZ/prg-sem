@@ -29,10 +29,10 @@ bool get_message_size(uint8_t msg_type, int *len) {
         *len = 2 + 4 * sizeof(double) + 1; // 2 + 4 * params + n
         break;
     case MSG_COMPUTE:
-        *len = 2 + 1 + 2 * sizeof(double) + 3; // 2 + cid (8bit) + 2x(double - re, im) + 2 ( n_re, n_im) + 1 (forced)
+        *len = 2 + 3 * sizeof(double) + 3; // 2 + cid (double) + 2x(double - re, im) + 2 (n_re, n_im) + 1 (forced)
         break;
     case MSG_COMPUTE_DATA:
-        *len = 2 + 4; // cid, dx, dy, iter
+        *len = 2 + sizeof(double) + 3; // 2 + cid (double) + i_re + i_im + iter
         break;
     default:
         ret = false;
@@ -78,20 +78,20 @@ bool fill_message_buf(const message *msg, uint8_t *buf, int size, int *len) {
         *len = 1 + 4 * sizeof(double) + 1;
         break;
     case MSG_COMPUTE:
-        buf[1] = msg->data.compute.cid; // cid
-        memcpy(&(buf[2 + 0 * sizeof(double)]), &(msg->data.compute.re), sizeof(double));
-        memcpy(&(buf[2 + 1 * sizeof(double)]), &(msg->data.compute.im), sizeof(double));
-        buf[2 + 2 * sizeof(double) + 0] = msg->data.compute.n_re;
-        buf[2 + 2 * sizeof(double) + 1] = msg->data.compute.n_im;
-        buf[2 + 2 * sizeof(double) + 2] = msg->data.compute.forced;
-        *len = 1 + 1 + 2 * sizeof(double) + 3;
+        memcpy(&(buf[1 + 0 * sizeof(double)]), &(msg->data.compute.cid), sizeof(double));
+        memcpy(&(buf[1 + 1 * sizeof(double)]), &(msg->data.compute.re), sizeof(double));
+        memcpy(&(buf[1 + 2 * sizeof(double)]), &(msg->data.compute.im), sizeof(double));
+        buf[1 + 3 * sizeof(double) + 0] = msg->data.compute.n_re;
+        buf[1 + 3 * sizeof(double) + 1] = msg->data.compute.n_im;
+        buf[1 + 3 * sizeof(double) + 2] = msg->data.compute.forced;
+        *len = 1 + 3 * sizeof(double) + 3;
         break;
     case MSG_COMPUTE_DATA:
-        buf[1] = msg->data.compute_data.cid;
-        buf[2] = msg->data.compute_data.i_re;
-        buf[3] = msg->data.compute_data.i_im;
-        buf[4] = msg->data.compute_data.iter;
-        *len = 5;
+        memcpy(&(buf[1 + 0 * sizeof(double)]), &(msg->data.compute_data.cid), sizeof(double));
+        buf[1 + sizeof(double) + 0] = msg->data.compute_data.i_re;
+        buf[1 + sizeof(double) + 1] = msg->data.compute_data.i_im;
+        buf[1 + sizeof(double) + 2] = msg->data.compute_data.iter;
+        *len = 1 + sizeof(double) + 3;
         break;
     default: // unknown message type
         ret = false;
@@ -147,18 +147,18 @@ bool parse_message_buf(const uint8_t *buf, int size, message *msg) {
             msg->data.set_compute.n = buf[1 + 4 * sizeof(double)];
             break;
         case MSG_COMPUTE: // type + chunk_id + nbr_tasks
-            msg->data.compute.cid = buf[1];
-            memcpy(&(msg->data.compute.re), &(buf[2 + 0 * sizeof(double)]), sizeof(double));
-            memcpy(&(msg->data.compute.im), &(buf[2 + 1 * sizeof(double)]), sizeof(double));
-            msg->data.compute.n_re = buf[2 + 2 * sizeof(double) + 0];
-            msg->data.compute.n_im = buf[2 + 2 * sizeof(double) + 1];
-            msg->data.compute.forced = buf[2 + 2 * sizeof(double) + 2];
+            memcpy(&(msg->data.compute.cid), &(buf[1 + 0 * sizeof(double)]), sizeof(double));
+            memcpy(&(msg->data.compute.re), &(buf[1 + 1 * sizeof(double)]), sizeof(double));
+            memcpy(&(msg->data.compute.im), &(buf[1 + 2 * sizeof(double)]), sizeof(double));
+            msg->data.compute.n_re = buf[1 + 3 * sizeof(double) + 0];
+            msg->data.compute.n_im = buf[1 + 3 * sizeof(double) + 1];
+            msg->data.compute.forced = buf[1 + 3 * sizeof(double) + 2];
             break;
         case MSG_COMPUTE_DATA: // type + chunk_id + task_id + result
-            msg->data.compute_data.cid = buf[1];
-            msg->data.compute_data.i_re = buf[2];
-            msg->data.compute_data.i_im = buf[3];
-            msg->data.compute_data.iter = buf[4];
+            memcpy(&(msg->data.compute_data.cid), &(buf[1 + 0 * sizeof(double)]), sizeof(double));
+            msg->data.compute_data.i_re = buf[1 + sizeof(double) + 0];
+            msg->data.compute_data.i_im = buf[1 + sizeof(double) + 1];
+            msg->data.compute_data.iter = buf[1 + sizeof(double) + 2];
             break;
         default: // unknown message type
             ret = false;

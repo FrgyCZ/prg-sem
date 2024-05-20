@@ -4,6 +4,7 @@
         "messages.h": "c",
         "system_error": "c",
         "pthread.h": "c",
-        "keyboard_module.h": "c"
+        "keyboard_module.h": "c",
+        "stdio.h": "c"
     }
 }

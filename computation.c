@@ -3,7 +3,9 @@
 
 #include "computation.h"
 #include "event_queue.h"
+#include "gui.h"
 #include "utils.h"
+#include "xwin_sdl.h"
 
 comp_t comp = {
     .c_re = -0.4,
@@ -16,8 +18,8 @@ comp_t comp = {
     .range_im_min = -1.1,
     .range_im_max = 1.1,
 
-    .grid_w = 640,
-    .grid_h = 480,
+    .grid_w = (int)(640),
+    .grid_h = (int)(480),
 
     .cur_x = 0,
     .cur_y = 0,
@@ -278,4 +280,23 @@ void get_info(char *c, char *depth){
     //send current depth
     sprintf(depth, "depth: %d", (int)comp.n);
 }
+
+void change_resolution(bool up){
+    if (up){
+        comp.grid_w += comp.chunk_n_re;
+        comp.grid_h += comp.chunk_n_im;
+    }
+    else {
+        comp.grid_w -= comp.chunk_n_re;
+        comp.grid_h -= comp.chunk_n_im;
+    }
+    gui_change_window_size(comp.grid_w, comp.grid_h);
+    free(comp.grid);
+    comp.grid = my_alloc(comp.grid_w * comp.grid_h * sizeof(uint8_t));
+    comp.d_re = (comp.range_re_max - comp.range_re_min) / (1. * comp.grid_w);
+    comp.d_im = -(comp.range_im_max - comp.range_im_min) / (1. * comp.grid_h);
+    comp.nbr_chunks = (comp.grid_h / comp.chunk_n_im) * (comp.grid_w / comp.chunk_n_re);
+    printf("nbr_chunks: %d\n", comp.nbr_chunks);
+}
+
 /* end of computation.c */

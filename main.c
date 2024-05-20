@@ -26,6 +26,8 @@ void *main_thread(void *d) {
     computation_init();
     gui_init();
 
+    display_startup_message();
+
     do {
         event ev = queue_pop();
         msg.type = MSG_NBR;
@@ -80,36 +82,46 @@ void *main_thread(void *d) {
             gui_save_image();
             break;
         case EV_UP:
-            move(0, 1);
+            move(0, MOVE_AMOUNT);
             debug_view();
             break;
         case EV_DOWN:
-            move(0, -1);
+            move(0, -MOVE_AMOUNT);
             debug_view();
             break;
         case EV_LEFT:
-            move(-1, 0);
+            move(-MOVE_AMOUNT, 0);
             debug_view();
             break;
         case EV_RIGHT:
-            move(1, 0);
+            move(MOVE_AMOUNT, 0);
             debug_view();
             break;
         case EV_C_RE_INCREASE:
-            change_c_re(0.05);
+            change_c_re(C_CHANGE_COEFFICIENT);
             debug_view();
             break;
         case EV_C_RE_DECREASE:
-            change_c_re(-0.05);
+            change_c_re(-C_CHANGE_COEFFICIENT);
             debug_view();
             break;
         case EV_C_IM_INCREASE:
-            change_c_im(0.05);
+            change_c_im(C_CHANGE_COEFFICIENT);
             debug_view();
             break;
         case EV_C_IM_DECREASE:
-            change_c_im(-0.05);
+            change_c_im(-C_CHANGE_COEFFICIENT);
             debug_view();
+            break;
+        case EV_RESOLUTION_UP:
+            change_resolution(1);
+            clear_buffer();
+            gui_refresh();
+            break;
+        case EV_RESOLUTION_DOWN:
+            change_resolution(0);
+            clear_buffer();
+            gui_refresh();
             break;
         case EV_TOGGLE_DEBUG:
             debug_enabled = !debug_enabled;

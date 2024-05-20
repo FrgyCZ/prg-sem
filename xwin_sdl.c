@@ -13,6 +13,7 @@
 
 static SDL_Window *win = NULL;
 static TTF_Font *font = NULL;
+static TTF_Font *font_small = NULL;
 
 static unsigned char icon_32x32_bits[] = {
    0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x20, 0x00, 0x00, 0x23, 0x00, 0x01, 0x29, 0x00, 0x01, 0x2e, 0x00, 0x02, 0x31, 0x00, 0x02, 0x34, 0x00, 0x02, 0x35, 0x00, 0x02, 0x33, 0x00, 0x02, 0x31, 0x00, 0x01, 0x2d, 0x00, 0x01, 0x29, 0x00, 0x00, 0x23, 0x00, 0x00, 0x20, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21, 0x00, 0x00, 0x21,
@@ -61,6 +62,7 @@ int xwin_init(int w, int h) {
     //font init
     TTF_Init();
     font = TTF_OpenFont("font.ttf", 36);
+    font_small = TTF_OpenFont("font.ttf", 26);
     printf("Font load %s\n", (font == NULL) ? "failed" : "succeeded");
     return r;
 }
@@ -70,6 +72,21 @@ void xwin_close() {
     TTF_Quit();
     SDL_DestroyWindow(win);
     SDL_Quit();
+}
+
+void xwin_display_startup_message(void) {
+    SDL_Surface *scr = SDL_GetWindowSurface(win);
+    SDL_FillRect(scr, NULL, SDL_MapRGB(scr->format, 0, 0, 0));
+    render_text_to_win("PRG Semester Project", 10, 10, true);
+    render_text_to_win("Compute on module - 1  Set compute on module - S", 10, 60, true);
+    render_text_to_win("Reset chunk ID - R   Abort - A", 10, 110, true);
+    render_text_to_win("Get version from module - G   Compute on CPU - C", 10, 160, true);
+    render_text_to_win("Refresh GUI - P   Clear GUI - L", 10, 210, true);
+    render_text_to_win("Zoom in/out - +/-   Move - UP/DOWN/LEFT/RIGHT", 10, 260, true);
+    render_text_to_win("Change C_re - CTRL+UP/DOWN   Change C_im - CTRL+LEFT/RIGHT", 10, 310, true);
+    render_text_to_win("Activate debug mode (compute with CPU on every action) - D", 10, 360, true);
+    render_text_to_win("PRESS SPACE TO CONTINUE... (or Q to quit)", 10, 420, true);
+    SDL_UpdateWindowSurface(win);
 }
 
 void xwin_redraw(int w, int h, unsigned char *img, const char *c_text, const char *depth_text) {
@@ -86,17 +103,28 @@ void xwin_redraw(int w, int h, unsigned char *img, const char *c_text, const cha
             *(px + scr->format->Bshift / 8) = *(img++);
         }
     }
-    render_text_to_win(c_text, 10, 10);
-    render_text_to_win(depth_text, 10, 50);
+    render_text_to_win(c_text, 10, 10, false);
+    render_text_to_win(depth_text, 10, 50, false);
     SDL_UpdateWindowSurface(win);
 }
 
-void render_text_to_win(const char *text, int x, int y) {
-    if (font == NULL || text == NULL) {
+void change_window_size(int w, int h) {
+    SDL_SetWindowSize(win, w, h);
+}
+
+void render_text_to_win(const char *text, int x, int y, bool info_text) {
+    TTF_Font *current_font = NULL;
+    if (info_text) {
+        current_font = font_small;
+    }
+    else {
+        current_font = font;
+    }
+    if (current_font == NULL || text == NULL) {
         return;
     }
     SDL_Color color = {255, 255, 255};
-    SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Surface *surface = TTF_RenderText_Solid(current_font, text, color);
     SDL_Rect rect = {x, y, surface->w, surface->h};
     SDL_BlitSurface(surface, NULL, SDL_GetWindowSurface(win), &rect);
     SDL_FreeSurface(surface);

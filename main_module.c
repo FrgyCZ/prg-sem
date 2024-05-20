@@ -58,7 +58,6 @@ void *main_module_thread(void *d)
         {
             free(ev.data.msg);
         }
-        
         if (msg.type != MSG_NBR) {
             my_assert(fill_message_buf(&msg, msg_buf, sizeof(msg_buf), &msg_len), __func__, __LINE__, __FILE__);
             if (!(write(pipe_out, msg_buf, msg_len) == msg_len)) {

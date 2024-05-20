@@ -15,7 +15,7 @@ typedef struct {
     double d_re;
     double d_im;
 
-    int cid;
+    double cid;
     double chunk_re;
     double chunk_im;
 
@@ -37,5 +37,10 @@ bool is_module_aborted(void);
 
 void prepare_pixel_to_msg(u_int8_t i, u_int8_t j, u_int8_t iteration);
 void send_message_to_pipe(message *msg);
+
+double complex complex_module_pow(double complex z);
+double complex_module_abs(double complex z);
+double my_module_sqrt(double x);
+double my_module_abs(double x);
 
 #endif

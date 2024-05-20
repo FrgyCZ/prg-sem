@@ -20,6 +20,8 @@ static struct {
 } gui = { .img = NULL, .c_text = NULL, .depth_text = NULL};
 
 static bool control_pressed = false;
+static bool startup_active = true;
+static bool startup_quit = false;
 
 void gui_init(void) {
     get_grid_size(&gui.w, &gui.h);
@@ -65,12 +67,56 @@ void gui_record_animation(int frame) {
     record_animation(frame);
 }
 
+void gui_change_window_size(int w, int h) {
+    gui.w = w;
+    gui.h = h;
+    change_window_size(w, h);
+    if (gui.img) {
+        free(gui.img);
+        gui.img = my_alloc(w * h * 3);
+    }
+}
+
+void display_startup_message(void) {
+    SDL_Event event_sdl;
+    xwin_display_startup_message();
+    while (startup_active) {
+        if (SDL_PollEvent(&event_sdl)) {
+            if (event_sdl.type == SDL_QUIT) {
+                startup_quit = true;
+                break;
+            } 
+            else if (event_sdl.type == SDL_KEYDOWN) {
+                switch (event_sdl.key.keysym.sym) {
+                    case SDLK_SPACE:
+                        startup_active = false;
+                        break;
+                    case SDLK_q:
+                        startup_quit = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (startup_quit) {
+                break;
+            }
+        }
+        SDL_Delay(SDL_EVENT_POLL_WAIT_MS);
+    }
+    gui_refresh();
+}
+
 void *gui_win_thread(void *d) {
     info("gui_win_thread - start");
     bool quit = false;
     SDL_Event event_sdl;
     event ev;
-    while (!quit) {
+    while (!quit && !startup_quit) {
+        if (startup_active)
+        {
+            continue;
+        }
         ev.type = EV_TYPE_NUM;
         if (SDL_PollEvent(&event_sdl)) {
             if (event_sdl.type == SDL_QUIT) {
@@ -109,10 +155,24 @@ void *gui_win_thread(void *d) {
                         ev.type = EV_FORCED_COMPUTE;
                         break;
                     case SDLK_KP_PLUS:
-                        ev.type = EV_ZOOM_IN;
+                        if (control_pressed)
+                        {
+                            ev.type = EV_RESOLUTION_UP;
+                        }
+                        else
+                        {
+                            ev.type = EV_ZOOM_IN;
+                        }
                         break;
                     case SDLK_KP_MINUS:
-                        ev.type = EV_ZOOM_OUT;
+                        if (control_pressed)
+                        {
+                            ev.type = EV_RESOLUTION_DOWN;
+                        }
+                        else
+                        {
+                            ev.type = EV_ZOOM_OUT;
+                        }                        
                         break;
                     case SDLK_i:
                         ev.type = EV_SAVE_IMAGE;
