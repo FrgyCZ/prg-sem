@@ -80,6 +80,8 @@ void gui_change_window_size(int w, int h) {
 
 void display_startup_message(void) {
     SDL_Event event_sdl;
+    startup_active = true;
+    startup_quit = false;
     xwin_display_startup_message();
     while (startup_active) {
         if (SDL_PollEvent(&event_sdl)) {
@@ -235,6 +237,12 @@ void *gui_win_thread(void *d) {
                         break;
                     case SDLK_d:
                         ev.type = EV_TOGGLE_DEBUG;
+                        break;
+                    case SDLK_h:
+                        ev.type = EV_GET_HELP;
+                        break;
+                    case SDLK_u:
+                        ev.type = EV_SAVE_ANIMATION;
                         break;
                     default:
                         break;

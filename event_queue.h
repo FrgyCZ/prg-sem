@@ -45,6 +45,8 @@ typedef enum {
     EV_RESOLUTION_UP,
     EV_RESOLUTION_DOWN,
     EV_COMPUTE_ABORT,
+    EV_GET_HELP,
+    EV_SAVE_ANIMATION,
     EV_TYPE_NUM
 } event_type;
 

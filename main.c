@@ -142,9 +142,16 @@ void *main_thread(void *d) {
             clear_buffer();
             gui_refresh();
             break;
+        case EV_GET_HELP:
+            display_startup_message();
+            break;
         case EV_TOGGLE_DEBUG:
             debug_enabled = !debug_enabled;
             printf("Debug %s\n", debug_enabled ? "enabled" : "disabled");
+            break;
+        case EV_SAVE_ANIMATION:
+            info("Saving animation");
+            system("bash create_animation.sh anim");
             break;
         default:
             break;
