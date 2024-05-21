@@ -83,6 +83,9 @@ void get_info(char *c, char *depth);
 
 void change_resolution(bool up);
 
+void set_c_re(double x);
+void set_c_im(double y);
+
 #endif
 
 /* end of computation.h */

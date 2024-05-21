@@ -299,4 +299,12 @@ void change_resolution(bool up){
     printf("nbr_chunks: %d\n", comp.nbr_chunks);
 }
 
+void set_c_re(double x){
+    comp.c_re = x;
+}
+
+void set_c_im(double y){
+    comp.c_im = y;
+}
+
 /* end of computation.c */

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "computation.h"
 #include "event_queue.h"
 #include "gui.h"
 #include "main.h"
@@ -15,34 +16,27 @@
 
 void *read_pipe_thread(void *d);
 
-static double data[5]; //number of iterations, width, height, c_re, c_im
+static double data[2]; //c_re, c_im
+
 
 int main(int argc, char *argv[]) {
     //parse input arguments
-     int opt; 
-    while((opt = getopt(argc, argv, "n:w:h:r:i:")) != -1)  
+    int opt;
+    for (size_t i = 0; i < 2; i++)
+    {
+        data[i] = 0;
+    }
+    while((opt = getopt(argc, argv, "r:i:")) != -1)  
     {  
         switch(opt)  
         {   
-            case 'n': // number of iterations
-                printf("N: %s\n", optarg);
-                data[0] = atof(optarg);
-                break;
-            case 'w': // width
-                printf("Width: %s\n", optarg);
-                data[1] = atof(optarg);
-                break;
-            case 'h': // height
-                printf("Height: %s\n", optarg);
-                data[2] = atof(optarg);
-                break;
             case 'r': // c_re 
                 printf("Real: %s\n", optarg);
-                data[3] = atof(optarg);
+                data[0] = atof(optarg);
                 break;
             case 'i': // c_im
                 printf("Imag: %s\n", optarg);
-                data[4] = atof(optarg);
+                data[1] = atof(optarg);
                 break;
             case ':':  
                 printf("option needs a value\n");  
@@ -51,6 +45,14 @@ int main(int argc, char *argv[]) {
                 printf("unknown option: %c\n", optopt); 
                 break;  
         }  
+    }
+    if (data[0] != 0)
+    {
+        set_c_re(data[0]);
+    }
+    if (data[1] != 0)
+    {
+        set_c_im(data[1]);
     }
     //init threads
     int ret = EXIT_SUCCESS;
